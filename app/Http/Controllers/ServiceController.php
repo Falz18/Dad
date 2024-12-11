@@ -14,16 +14,18 @@ class ServiceController extends Controller
             'email' => 'required|email|max:255',
             'userType' => 'required|string',
         ]);
-
-        Service::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'userType' => $validated['userType'],
+    
+        Service::create($validated);
+    
+        $filePath = public_path('porto/portfolio.pdf');
+    
+        return response()->streamDownload(function () use ($filePath) {
+            $stream = fopen($filePath, 'r');
+            fpassthru($stream);
+        }, 'portfolio.pdf', [
+            'Content-Type' => 'application/pdf',
         ]);
-
-        $file = public_path('porto/portfolio.pdf');
-
-        return response()->download($file);
     }
+    
 }
 
